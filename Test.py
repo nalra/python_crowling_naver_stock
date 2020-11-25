@@ -2,6 +2,7 @@
 
 import requests 
 import pandas as pd
+import numpy as np
 import sys
 import re
 import os
@@ -122,15 +123,15 @@ def get_company_list() :
 	print("Laster Row : " + str(lastRow) + " colum num : " + str(lastCol))
 	#mWorkSheet.Range("C2:C" + str(lastRow)).Select()  # 기업코드
 
-	for i in range (2270, lastRow+1) :
+	for i in range (17, 25) : #lastRow+1) :
 		url = 'https://finance.naver.com/item/sise.nhn?code=' + str(mWorkSheet.Cells(i,3).Value)
 		print('url = ' + str(url))
 		table_df_list = pd.read_html(url, encoding='euc-kr')    # 한글이 깨짐. utf-8도 깨짐. 그래서 'euc-kr'로 설정함
 		table_df = table_df_list[1]  # 리스트 중에서 원하는 데이터프레임 한개를 가져온다
 		df = pd.DataFrame(table_df)
-		# df.loc = row, column, 0부터 시작
-		mWorkSheet.Cells(i, 10).Value = df.loc[0][1] #현재가
-		mWorkSheet.Cells(i, 11).Value = str(df.loc[1][1]) + " " + str(df.loc[2][1]) #전일대비 + 등락률(%)
+		# df.iloc = row, column, 0부터 시작
+		mWorkSheet.Cells(i, 10).Value = df.iloc[0][1] #현재가
+		mWorkSheet.Cells(i, 11).Value = str(df.iloc[1][1]) + " " + str(df.iloc[2][1]) #전일대비 + 등락률(%)
 		#print(df.head()) #print dataframe data
 		#print(df.shape) #get row, column count
 
@@ -140,92 +141,94 @@ def get_company_list() :
 		table_df = table_df_list[5] #주요 재무제표
 		df = pd.DataFrame(table_df)
 
-		mWorkSheet.Cells(i, 12).Value = df.loc[2][1] #상장주식수
+		mWorkSheet.Cells(i, 12).Value = df.iloc[2][1] #상장주식수
 		mWorkSheet.Cells(i, 13).Value = "=J"+ str(i) + "*L" + str(i) + "/100000000"   #시가총액(억) = 상장주식수 * 현재가
 
 		table_df = table_df_list[3] #주요 재무제표
-		table_df.columns = table_df.columns.droplevel(2)
+		#table_df.columns = table_df.columns.droplevel(2)
 		df = pd.DataFrame(table_df)
+		df.fillna(0)
 
 		#매출액
-		mWorkSheet.Cells(i, 25).Value = df.loc[0][1] # 2017.12 (Y)
-		mWorkSheet.Cells(i, 26).Value = df.loc[0][2] # 2018.12 (Y)
-		mWorkSheet.Cells(i, 27).Value = df.loc[0][3] # 2019.12 (Y)
-		if pd.isnull(df.loc[0, 4]) == True :
+		mWorkSheet.Cells(i, 25).Value = df.iloc[0][1] # 2017.12 (Y)
+		mWorkSheet.Cells(i, 26).Value = df.iloc[0][2] # 2018.12 (Y)
+		mWorkSheet.Cells(i, 27).Value = df.iloc[0][3] # 2019.12 (Y)
+
+		if df.iloc[0, 4] == '0' :
 			#어닝이 없을 경우 이전 2019년 3,4분기 + 2020년 1,2분기를 더한다. 
-			vTmp = df.loc[0][6] +  df.loc[0][7] + df.loc[0][8] + df.loc[0][9]
+			vTmp = df.iloc[0][6] +  df.iloc[0][7] + df.iloc[0][8] + df.iloc[0][9]
 			mWorkSheet.Cells(i, 28).Value = vTmp
 		else :
-			mWorkSheet.Cells(i, 28).Value = df.loc[0][4] # 2020.12 (E) (Y)		
+			mWorkSheet.Cells(i, 28).Value = df.iloc[0][4] # 2020.12 (E) (Y)		
 
 		#to be filled 2020.03 data
-		mWorkSheet.Cells(i, 30).Value = df.loc[0][5] # 2019.06
-		mWorkSheet.Cells(i, 31).Value = df.loc[0][6] # 2019.09
-		mWorkSheet.Cells(i, 32).Value = df.loc[0][7] # 2019.12
-		mWorkSheet.Cells(i, 33).Value = df.loc[0][8] # 2020.03
-		mWorkSheet.Cells(i, 34).Value = df.loc[0][9] # 2020.06
-		if pd.isnull(df.loc[0, 10]) == True :
+		mWorkSheet.Cells(i, 30).Value = df.iloc[0][5] # 2019.06
+		mWorkSheet.Cells(i, 31).Value = df.iloc[0][6] # 2019.09
+		mWorkSheet.Cells(i, 32).Value = df.iloc[0][7] # 2019.12
+		mWorkSheet.Cells(i, 33).Value = df.iloc[0][8] # 2020.03
+		mWorkSheet.Cells(i, 34).Value = df.iloc[0][9] # 2020.06
+		if df.iloc[0, 10] == '0' :
 			# 어닝이 없을 경우 이전 2019년 3분기를 사용한다. 
-			mWorkSheet.Cells(i, 35).Value = df.loc[0][6] # 2019.09
+			mWorkSheet.Cells(i, 35).Value = df.iloc[0][6] # 2019.09
 		else :
-			mWorkSheet.Cells(i, 35).Value = df.loc[0][10] # 2020.09 (E)
-		#mWorkSheet.Cells(i, 36).Value = df.loc[0][11] # 2020.12 (E)
+			mWorkSheet.Cells(i, 35).Value = df.iloc[0][10] # 2020.09 (E)
+		#mWorkSheet.Cells(i, 36).Value = df.iloc[0][11] # 2020.12 (E)
 
 		#영업이익
-		mWorkSheet.Cells(i, 37).Value = df.loc[1][1] # 2017.12 (Y)
-		mWorkSheet.Cells(i, 38).Value = df.loc[1][2] # 2018.12 (Y)
-		mWorkSheet.Cells(i, 39).Value = df.loc[1][3] # 2019.12 (Y)
-		if pd.isnull(df.loc[1, 4]) == True :
+		mWorkSheet.Cells(i, 37).Value = df.iloc[1][1] # 2017.12 (Y)
+		mWorkSheet.Cells(i, 38).Value = df.iloc[1][2] # 2018.12 (Y)
+		mWorkSheet.Cells(i, 39).Value = df.iloc[1][3] # 2019.12 (Y)
+		if df.iloc[1, 4] == '0' :
 			#어닝이 없을 경우 이전 2019년 3,4분기 + 2020년 1,2분기를 더한다. 
-			vTmp = df.loc[1][6] +  df.loc[1][7] + df.loc[1][8] + df.loc[1][9]
+			vTmp = df.iloc[1][6] +  df.iloc[1][7] + df.iloc[1][8] + df.iloc[1][9]
 			mWorkSheet.Cells(i, 40).Value = vTmp
 		else :
-			mWorkSheet.Cells(i, 40).Value = df.loc[1][4] # 2020.12 (E) (Y)
+			mWorkSheet.Cells(i, 40).Value = df.iloc[1][4] # 2020.12 (E) (Y)
 
 		#to be filled 2020.03 data
-		mWorkSheet.Cells(i, 42).Value = df.loc[1][5] # 2019.06
-		mWorkSheet.Cells(i, 43).Value = df.loc[1][6] # 2019.09
-		mWorkSheet.Cells(i, 44).Value = df.loc[1][7] # 2019.12
-		mWorkSheet.Cells(i, 45).Value = df.loc[1][8] # 2020.03
-		mWorkSheet.Cells(i, 46).Value = df.loc[1][9] # 2020.06
-		if pd.isnull(df.loc[1, 10]) == True :
+		mWorkSheet.Cells(i, 42).Value = df.iloc[1][5] # 2019.06
+		mWorkSheet.Cells(i, 43).Value = df.iloc[1][6] # 2019.09
+		mWorkSheet.Cells(i, 44).Value = df.iloc[1][7] # 2019.12
+		mWorkSheet.Cells(i, 45).Value = df.iloc[1][8] # 2020.03
+		mWorkSheet.Cells(i, 46).Value = df.iloc[1][9] # 2020.06
+		if df.iloc[1, 10] == '0' :
 			# 어닝이 없을 경우 이전 2019년 3분기를 사용한다. 
-			mWorkSheet.Cells(i, 47).Value = df.loc[1][6] # 2019.09
+			mWorkSheet.Cells(i, 47).Value = df.iloc[1][6] # 2019.09
 		else :
-			mWorkSheet.Cells(i, 47).Value = df.loc[1][10] # 2020.12 (E) (Y)
-		#mWorkSheet.Cells(i, 48).Value = df.loc[1][11] # 2020.12 (E)
+			mWorkSheet.Cells(i, 47).Value = df.iloc[1][10] # 2020.12 (E) (Y)
+		#mWorkSheet.Cells(i, 48).Value = df.iloc[1][11] # 2020.12 (E)
 
 		#당기순이익
-		mWorkSheet.Cells(i, 49).Value = df.loc[2][1] # 2017.12 (Y)
-		mWorkSheet.Cells(i, 50).Value = df.loc[2][2] # 2018.12 (Y)
-		mWorkSheet.Cells(i, 51).Value = df.loc[2][3] # 2019.12 (Y)
-		if pd.isnull(df.loc[2, 4]) == True :
+		mWorkSheet.Cells(i, 49).Value = df.iloc[2][1] # 2017.12 (Y)
+		mWorkSheet.Cells(i, 50).Value = df.iloc[2][2] # 2018.12 (Y)
+		mWorkSheet.Cells(i, 51).Value = df.iloc[2][3] # 2019.12 (Y)
+		if df.iloc[2, 4] == '0' :
 			#어닝이 없을 경우 이전 2019년 3,4분기 + 2020년 1,2분기를 더한다. 
-			vTmp = df.loc[2][6] +  df.loc[2][7] + df.loc[2][8] + df.loc[2][9]
+			vTmp = df.iloc[2][6] +  df.iloc[2][7] + df.iloc[2][8] + df.iloc[2][9]
 			mWorkSheet.Cells(i, 52).Value = vTmp
 		else :
-			mWorkSheet.Cells(i, 52).Value = df.loc[2][4] # 2020.12 (E) (Y)
+			mWorkSheet.Cells(i, 52).Value = df.iloc[2][4] # 2020.12 (E) (Y)
 		#to be filled 2020.03 data
-		mWorkSheet.Cells(i, 54).Value = df.loc[2][5] # 2019.06
-		mWorkSheet.Cells(i, 55).Value = df.loc[2][6] # 2019.09
-		mWorkSheet.Cells(i, 56).Value = df.loc[2][7] # 2019.12
-		mWorkSheet.Cells(i, 57).Value = df.loc[2][8] # 2020.03
-		mWorkSheet.Cells(i, 58).Value = df.loc[2][9] # 2020.06
-		if pd.isnull(df.loc[2, 10]) == True :
+		mWorkSheet.Cells(i, 54).Value = df.iloc[2][5] # 2019.06
+		mWorkSheet.Cells(i, 55).Value = df.iloc[2][6] # 2019.09
+		mWorkSheet.Cells(i, 56).Value = df.iloc[2][7] # 2019.12
+		mWorkSheet.Cells(i, 57).Value = df.iloc[2][8] # 2020.03
+		mWorkSheet.Cells(i, 58).Value = df.iloc[2][9] # 2020.06
+		if df.iloc[2, 10] == '0' :
 			# 어닝이 없을 경우 이전 2019년 3분기를 사용한다. 
-			mWorkSheet.Cells(i, 59).Value = df.loc[2][6] # 2019.09
+			mWorkSheet.Cells(i, 59).Value = df.iloc[2][6] # 2019.09
 		else :
-			mWorkSheet.Cells(i, 59).Value = df.loc[2][10] # 2020.09 (E)
-		#mWorkSheet.Cells(i, 60).Value = df.loc[2][10] # 2020.12 (E)
+			mWorkSheet.Cells(i, 59).Value = df.iloc[2][10] # 2020.09 (E)
+		#mWorkSheet.Cells(i, 60).Value = df.iloc[2][10] # 2020.12 (E)
 
-		mWorkSheet.Cells(i, 15).Value = df.loc[10][4]  # PER = 주가 / 주당순이익(EPS)
-		vTempEPS = df.loc[9][10] 	                   # 2020.09 EPS
+		mWorkSheet.Cells(i, 15).Value = df.iloc[10][4]  # PER = 주가 / 주당순이익(EPS)
+		vTempEPS = df.iloc[9][10] 	                   # 2020.09 EPS
 		vTempEPS = vTempEPS*4
 		mWorkSheet.Cells(i, 16).Value = float(str(mWorkSheet.Cells(i, 10).Value)) / vTempEPS  # 주가 / 주당 순이익
 
-		mWorkSheet.Cells(i, 17).Value = df.loc[12][4] # PBR
+		mWorkSheet.Cells(i, 17).Value = df.iloc[12][4] # PBR
 
-		mWorkSheet.Cells(i, 18).Value = df.loc[5][4] # ROE
+		mWorkSheet.Cells(i, 18).Value = df.iloc[5][4] # ROE
 
 		mWorkSheet.Cells(i, 61).Value = "=AK" + str(i) + "/Y" + str(i)   #영업이익률(2017.12)
 		mWorkSheet.Cells(i, 62).Value = "=AL" + str(i) + "/Z" + str(i)   #영업이익률(2018.12)
@@ -254,20 +257,20 @@ def get_company_list() :
 		#mWorkSheet.Cells(i, 84).Value = "=BH" +str(i) + "/AJ" + str(i)  #순이익률(2020.12) (E)
 
 		for j in range (1, 10) :
-			if pd.isnull(df.loc[5, j]) == True : # Is NaN
+			if pd.isnull(df.iloc[5, j]) == True : # Is NaN
 				mWorkSheet.Cells(i, 84+j).Value = 0
 			else :
-				mWorkSheet.Cells(i, 84+j).Value = df.loc[5][j] # ROE 2017.12 ~ 2020.12
+				mWorkSheet.Cells(i, 84+j).Value = df.iloc[5][j] # ROE 2017.12 ~ 2020.12
 
 		for j in range (1, 10) :
-			if pd.isnull(df.loc[6, j]) == True : # Is NaN
+			if pd.isnull(df.iloc[6, j]) == True : # Is NaN
 				mWorkSheet.Cells(i, 95+j).Value = 0
 			else :
-				mWorkSheet.Cells(i, 95+j).Value = df.loc[6][j] # 부채비율 2017.12 ~ 2020.12
+				mWorkSheet.Cells(i, 95+j).Value = df.iloc[6][j] # 부채비율 2017.12 ~ 2020.12
 
 		table_df = table_df_list[4]
 		df = pd.DataFrame(table_df)
-		mWorkSheet.Cells(i, 14).Value = df.loc[4][1] #외국인비율(%)
+		mWorkSheet.Cells(i, 14).Value = df.iloc[4][1] #외국인비율(%)
 
 		mWorkSheet.Cells(i, 19).Value = "=AB" +str(i) + "/AA" + str(i)    # 2020 / 2019 매출증가 (YoY)
 		mWorkSheet.Cells(i, 20).Value = "=AI" +str(i) + "/AE" + str(i)  # 전년동분기대비 매출증가 (QoQ)
@@ -286,16 +289,20 @@ mWorkSheet = mWorkBook.Worksheets('RawData')
 mWorkSheet.Select()
 
 #set_title_list()
-get_company_list()
+#get_company_list()
 #def run_each_company_data(company_code) :
 
 #test code start
-#url = 'https://finance.naver.com/item/main.nhn?code=071840'
+#url = 'https://finance.naver.com/item/main.nhn?code=055550'
 #table_df_list = pd.read_html(url, encoding='euc-kr')
-#table_df = table_df_list[0]  # 리스트 중에서 원하는 데이터프레임 한개를 가져온다
+#table_df = table_df_list[3]  # 리스트 중에서 원하는 데이터프레임 한개를 가져온다
 #table_df.columns = table_df.columns.droplevel(2)
-#print('table_df_list[0]')
+#print('table_df_list[3]')
+#df = pd.DataFrame(table_df)
+#df.fillna(0)
 #print(table_df)
+#print(df.iloc[0, 4] == 'nan')
+#print(df.iloc[0, 4] == np.nan)
 #test code end
 
 mWorkBook.Save()
