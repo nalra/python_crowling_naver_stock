@@ -123,7 +123,7 @@ def get_company_list() :
 	print("Laster Row : " + str(lastRow) + " colum num : " + str(lastCol))
 	#mWorkSheet.Range("C2:C" + str(lastRow)).Select()  # 기업코드
 
-	for i in range (17, 25) : #lastRow+1) :
+	for i in range (2, lastRow+1) :
 		url = 'https://finance.naver.com/item/sise.nhn?code=' + str(mWorkSheet.Cells(i,3).Value)
 		print('url = ' + str(url))
 		table_df_list = pd.read_html(url, encoding='euc-kr')    # 한글이 깨짐. utf-8도 깨짐. 그래서 'euc-kr'로 설정함
@@ -153,13 +153,12 @@ def get_company_list() :
 		mWorkSheet.Cells(i, 25).Value = df.iloc[0][1] # 2017.12 (Y)
 		mWorkSheet.Cells(i, 26).Value = df.iloc[0][2] # 2018.12 (Y)
 		mWorkSheet.Cells(i, 27).Value = df.iloc[0][3] # 2019.12 (Y)
-
-		if df.iloc[0, 4] == '0' :
-			#어닝이 없을 경우 이전 2019년 3,4분기 + 2020년 1,2분기를 더한다. 
+		mWorkSheet.Cells(i, 28).Value = df.iloc[0][4] # 2020.12 (E) (Y)
+		if mWorkSheet.Cells(i, 28).Value == 65535 :
+			#어닝이 없을 경우 NaN값이 65535로 입력됨
+			# 이전 2019년 4분기 + 2020년 1,2,3분기를 더한다.
 			vTmp = df.iloc[0][6] +  df.iloc[0][7] + df.iloc[0][8] + df.iloc[0][9]
 			mWorkSheet.Cells(i, 28).Value = vTmp
-		else :
-			mWorkSheet.Cells(i, 28).Value = df.iloc[0][4] # 2020.12 (E) (Y)		
 
 		#to be filled 2020.03 data
 		mWorkSheet.Cells(i, 30).Value = df.iloc[0][5] # 2019.06
@@ -167,23 +166,21 @@ def get_company_list() :
 		mWorkSheet.Cells(i, 32).Value = df.iloc[0][7] # 2019.12
 		mWorkSheet.Cells(i, 33).Value = df.iloc[0][8] # 2020.03
 		mWorkSheet.Cells(i, 34).Value = df.iloc[0][9] # 2020.06
-		if df.iloc[0, 10] == '0' :
-			# 어닝이 없을 경우 이전 2019년 3분기를 사용한다. 
-			mWorkSheet.Cells(i, 35).Value = df.iloc[0][6] # 2019.09
-		else :
-			mWorkSheet.Cells(i, 35).Value = df.iloc[0][10] # 2020.09 (E)
-		#mWorkSheet.Cells(i, 36).Value = df.iloc[0][11] # 2020.12 (E)
+		mWorkSheet.Cells(i, 35).Value = df.iloc[0][10] # 2020.09
+		mWorkSheet.Cells(i, 36).Value = df.iloc[0][11] # 2020.12 (E)
+		if mWorkSheet.Cells(i, 36).Value == 65535 :
+			# 어닝이 없을 경우 이전 2019년 4분기를 사용한다. 
+			mWorkSheet.Cells(i, 36).Value = df.iloc[0][7] # 2019.09
 
 		#영업이익
 		mWorkSheet.Cells(i, 37).Value = df.iloc[1][1] # 2017.12 (Y)
 		mWorkSheet.Cells(i, 38).Value = df.iloc[1][2] # 2018.12 (Y)
 		mWorkSheet.Cells(i, 39).Value = df.iloc[1][3] # 2019.12 (Y)
-		if df.iloc[1, 4] == '0' :
+		mWorkSheet.Cells(i, 40).Value = df.iloc[1][4] # 2020.12 (E) (Y)
+		if mWorkSheet.Cells(i, 40).Value == 65535 :
 			#어닝이 없을 경우 이전 2019년 3,4분기 + 2020년 1,2분기를 더한다. 
 			vTmp = df.iloc[1][6] +  df.iloc[1][7] + df.iloc[1][8] + df.iloc[1][9]
 			mWorkSheet.Cells(i, 40).Value = vTmp
-		else :
-			mWorkSheet.Cells(i, 40).Value = df.iloc[1][4] # 2020.12 (E) (Y)
 
 		#to be filled 2020.03 data
 		mWorkSheet.Cells(i, 42).Value = df.iloc[1][5] # 2019.06
@@ -191,38 +188,40 @@ def get_company_list() :
 		mWorkSheet.Cells(i, 44).Value = df.iloc[1][7] # 2019.12
 		mWorkSheet.Cells(i, 45).Value = df.iloc[1][8] # 2020.03
 		mWorkSheet.Cells(i, 46).Value = df.iloc[1][9] # 2020.06
-		if df.iloc[1, 10] == '0' :
+		mWorkSheet.Cells(i, 47).Value = df.iloc[1][10] # 2020.12 (E) (Y)
+		if mWorkSheet.Cells(i, 47).Value == 65535 :
 			# 어닝이 없을 경우 이전 2019년 3분기를 사용한다. 
 			mWorkSheet.Cells(i, 47).Value = df.iloc[1][6] # 2019.09
-		else :
-			mWorkSheet.Cells(i, 47).Value = df.iloc[1][10] # 2020.12 (E) (Y)
 		#mWorkSheet.Cells(i, 48).Value = df.iloc[1][11] # 2020.12 (E)
 
 		#당기순이익
 		mWorkSheet.Cells(i, 49).Value = df.iloc[2][1] # 2017.12 (Y)
 		mWorkSheet.Cells(i, 50).Value = df.iloc[2][2] # 2018.12 (Y)
 		mWorkSheet.Cells(i, 51).Value = df.iloc[2][3] # 2019.12 (Y)
-		if df.iloc[2, 4] == '0' :
+		mWorkSheet.Cells(i, 52).Value = df.iloc[2][4] # 2020.12 (E) (Y)
+		if mWorkSheet.Cells(i, 52).Value == 65535 :
 			#어닝이 없을 경우 이전 2019년 3,4분기 + 2020년 1,2분기를 더한다. 
 			vTmp = df.iloc[2][6] +  df.iloc[2][7] + df.iloc[2][8] + df.iloc[2][9]
 			mWorkSheet.Cells(i, 52).Value = vTmp
-		else :
-			mWorkSheet.Cells(i, 52).Value = df.iloc[2][4] # 2020.12 (E) (Y)
+
 		#to be filled 2020.03 data
 		mWorkSheet.Cells(i, 54).Value = df.iloc[2][5] # 2019.06
 		mWorkSheet.Cells(i, 55).Value = df.iloc[2][6] # 2019.09
 		mWorkSheet.Cells(i, 56).Value = df.iloc[2][7] # 2019.12
 		mWorkSheet.Cells(i, 57).Value = df.iloc[2][8] # 2020.03
 		mWorkSheet.Cells(i, 58).Value = df.iloc[2][9] # 2020.06
-		if df.iloc[2, 10] == '0' :
+		mWorkSheet.Cells(i, 59).Value = df.iloc[2][10] # 2020.09 (E)
+		if mWorkSheet.Cells(i, 59).Value == 65535 :
 			# 어닝이 없을 경우 이전 2019년 3분기를 사용한다. 
 			mWorkSheet.Cells(i, 59).Value = df.iloc[2][6] # 2019.09
-		else :
-			mWorkSheet.Cells(i, 59).Value = df.iloc[2][10] # 2020.09 (E)
 		#mWorkSheet.Cells(i, 60).Value = df.iloc[2][10] # 2020.12 (E)
 
-		mWorkSheet.Cells(i, 15).Value = df.iloc[10][4]  # PER = 주가 / 주당순이익(EPS)
-		vTempEPS = df.iloc[9][10] 	                   # 2020.09 EPS
+		vTempRevenue = mWorkSheet.Cells(i, 28).Value
+		mWorkSheet.Cells(i, 15).Value =  mWorkSheet.Cells(i, 28).Value
+		vTempPER = mWorkSheet.Cells(i, 28).Value
+		 df.iloc[10][4]
+		 # PER = 주가 / 주당순이익(EPS)
+		vTempEPS = df.iloc[9][10] 	                   # 2019.12 ~ 2020.09 EPS
 		vTempEPS = vTempEPS*4
 		mWorkSheet.Cells(i, 16).Value = float(str(mWorkSheet.Cells(i, 10).Value)) / vTempEPS  # 주가 / 주당 순이익
 
@@ -293,14 +292,14 @@ mWorkSheet.Select()
 #def run_each_company_data(company_code) :
 
 #test code start
-#url = 'https://finance.naver.com/item/main.nhn?code=055550'
-#table_df_list = pd.read_html(url, encoding='euc-kr')
-#table_df = table_df_list[3]  # 리스트 중에서 원하는 데이터프레임 한개를 가져온다
+url = 'https://finance.naver.com/item/main.nhn?code=081000'
+table_df_list = pd.read_html(url, encoding='euc-kr')
+table_df = table_df_list[3]  # 리스트 중에서 원하는 데이터프레임 한개를 가져온다
 #table_df.columns = table_df.columns.droplevel(2)
-#print('table_df_list[3]')
-#df = pd.DataFrame(table_df)
-#df.fillna(0)
-#print(table_df)
+print('table_df_list[3]')
+df = pd.DataFrame(table_df)
+df.fillna(0)
+print(table_df)
 #print(df.iloc[0, 4] == 'nan')
 #print(df.iloc[0, 4] == np.nan)
 #test code end
