@@ -156,21 +156,21 @@ def get_company_list() :
 		mWorkSheet.Cells(i, 28).Value = df.iloc[0][4] # 2020.12 (E) (Y)
 		if mWorkSheet.Cells(i, 28).Value == 65535 :
 			#어닝이 없을 경우 NaN값이 65535로 입력됨
-			# 이전 2019년 4분기 + 2020년 1,2,3분기를 더한다.
+			#어닝이 없을 경우 최근 4분기를 더한다. 
 			vTmp = df.iloc[0][6] +  df.iloc[0][7] + df.iloc[0][8] + df.iloc[0][9]
 			mWorkSheet.Cells(i, 28).Value = vTmp
 
 		#to be filled 2020.03 data
-		mWorkSheet.Cells(i, 30).Value = df.iloc[0][5] # 2019.06
-		mWorkSheet.Cells(i, 31).Value = df.iloc[0][6] # 2019.09
-		mWorkSheet.Cells(i, 32).Value = df.iloc[0][7] # 2019.12
-		mWorkSheet.Cells(i, 33).Value = df.iloc[0][8] # 2020.03
-		mWorkSheet.Cells(i, 34).Value = df.iloc[0][9] # 2020.06
-		mWorkSheet.Cells(i, 35).Value = df.iloc[0][10] # 2020.09
-		mWorkSheet.Cells(i, 36).Value = df.iloc[0][11] # 2020.12 (E)
+		#mWorkSheet.Cells(i, 30).Value = df.iloc[0][5] # 2019.06
+		mWorkSheet.Cells(i, 31).Value = df.iloc[0][5] # 2019.09
+		mWorkSheet.Cells(i, 32).Value = df.iloc[0][6] # 2019.12
+		mWorkSheet.Cells(i, 33).Value = df.iloc[0][7] # 2020.03
+		mWorkSheet.Cells(i, 34).Value = df.iloc[0][8] # 2020.06
+		mWorkSheet.Cells(i, 35).Value = df.iloc[0][9] # 2020.09
+		mWorkSheet.Cells(i, 36).Value = df.iloc[0][10] # 2020.12 (E)
 		if mWorkSheet.Cells(i, 36).Value == 65535 :
 			# 어닝이 없을 경우 이전 2019년 4분기를 사용한다. 
-			mWorkSheet.Cells(i, 36).Value = df.iloc[0][7] # 2019.09
+			mWorkSheet.Cells(i, 36).Value = df.iloc[0][6] # 2019.12
 
 		#영업이익
 		mWorkSheet.Cells(i, 37).Value = df.iloc[1][1] # 2017.12 (Y)
@@ -178,21 +178,21 @@ def get_company_list() :
 		mWorkSheet.Cells(i, 39).Value = df.iloc[1][3] # 2019.12 (Y)
 		mWorkSheet.Cells(i, 40).Value = df.iloc[1][4] # 2020.12 (E) (Y)
 		if mWorkSheet.Cells(i, 40).Value == 65535 :
-			#어닝이 없을 경우 이전 2019년 3,4분기 + 2020년 1,2분기를 더한다. 
+			#어닝이 없을 경우 최근 4분기를 더한다. 
 			vTmp = df.iloc[1][6] +  df.iloc[1][7] + df.iloc[1][8] + df.iloc[1][9]
 			mWorkSheet.Cells(i, 40).Value = vTmp
 
 		#to be filled 2020.03 data
-		mWorkSheet.Cells(i, 42).Value = df.iloc[1][5] # 2019.06
-		mWorkSheet.Cells(i, 43).Value = df.iloc[1][6] # 2019.09
-		mWorkSheet.Cells(i, 44).Value = df.iloc[1][7] # 2019.12
-		mWorkSheet.Cells(i, 45).Value = df.iloc[1][8] # 2020.03
-		mWorkSheet.Cells(i, 46).Value = df.iloc[1][9] # 2020.06
-		mWorkSheet.Cells(i, 47).Value = df.iloc[1][10] # 2020.12 (E) (Y)
-		if mWorkSheet.Cells(i, 47).Value == 65535 :
-			# 어닝이 없을 경우 이전 2019년 3분기를 사용한다. 
-			mWorkSheet.Cells(i, 47).Value = df.iloc[1][6] # 2019.09
-		#mWorkSheet.Cells(i, 48).Value = df.iloc[1][11] # 2020.12 (E)
+		#mWorkSheet.Cells(i, 42).Value = df.iloc[1][5] # 2019.06 이전 데이터 백업
+		mWorkSheet.Cells(i, 43).Value = df.iloc[1][5] # 2019.09
+		mWorkSheet.Cells(i, 44).Value = df.iloc[1][6] # 2019.12
+		mWorkSheet.Cells(i, 45).Value = df.iloc[1][7] # 2020.03
+		mWorkSheet.Cells(i, 46).Value = df.iloc[1][8] # 2020.06
+		mWorkSheet.Cells(i, 47).Value = df.iloc[1][9] # 2020.09
+		mWorkSheet.Cells(i, 48).Value = df.iloc[1][10] # 2020.12 (E)
+		if mWorkSheet.Cells(i, 48).Value == 65535 :
+			# 어닝이 없을 경우 이전 2019년 4분기를 사용한다. 
+			mWorkSheet.Cells(i, 48).Value = df.iloc[1][6] # 2019.12
 
 		#당기순이익
 		mWorkSheet.Cells(i, 49).Value = df.iloc[2][1] # 2017.12 (Y)
@@ -200,34 +200,53 @@ def get_company_list() :
 		mWorkSheet.Cells(i, 51).Value = df.iloc[2][3] # 2019.12 (Y)
 		mWorkSheet.Cells(i, 52).Value = df.iloc[2][4] # 2020.12 (E) (Y)
 		if mWorkSheet.Cells(i, 52).Value == 65535 :
-			#어닝이 없을 경우 이전 2019년 3,4분기 + 2020년 1,2분기를 더한다. 
+			#어닝이 없을 경우 최근 4분기를 더한다. 
 			vTmp = df.iloc[2][6] +  df.iloc[2][7] + df.iloc[2][8] + df.iloc[2][9]
 			mWorkSheet.Cells(i, 52).Value = vTmp
 
 		#to be filled 2020.03 data
-		mWorkSheet.Cells(i, 54).Value = df.iloc[2][5] # 2019.06
-		mWorkSheet.Cells(i, 55).Value = df.iloc[2][6] # 2019.09
-		mWorkSheet.Cells(i, 56).Value = df.iloc[2][7] # 2019.12
-		mWorkSheet.Cells(i, 57).Value = df.iloc[2][8] # 2020.03
-		mWorkSheet.Cells(i, 58).Value = df.iloc[2][9] # 2020.06
-		mWorkSheet.Cells(i, 59).Value = df.iloc[2][10] # 2020.09 (E)
-		if mWorkSheet.Cells(i, 59).Value == 65535 :
-			# 어닝이 없을 경우 이전 2019년 3분기를 사용한다. 
-			mWorkSheet.Cells(i, 59).Value = df.iloc[2][6] # 2019.09
-		#mWorkSheet.Cells(i, 60).Value = df.iloc[2][10] # 2020.12 (E)
+		#mWorkSheet.Cells(i, 54).Value = df.iloc[2][5] # 2019.06
+		mWorkSheet.Cells(i, 55).Value = df.iloc[2][5] # 2019.09
+		mWorkSheet.Cells(i, 56).Value = df.iloc[2][6] # 2019.12
+		mWorkSheet.Cells(i, 57).Value = df.iloc[2][7] # 2020.03
+		mWorkSheet.Cells(i, 58).Value = df.iloc[2][8] # 2020.06
+		mWorkSheet.Cells(i, 59).Value = df.iloc[2][9] # 2020.09
+		mWorkSheet.Cells(i, 60).Value = df.iloc[2][10] # 2020.12 (E)
+		if mWorkSheet.Cells(i, 60).Value == 65535 :
+			# 어닝이 없을 경우 이전 2019년 4분기를 사용한다. 
+			mWorkSheet.Cells(i, 60).Value = df.iloc[2][6] # 2019.12
 
-		vTempRevenue = mWorkSheet.Cells(i, 28).Value
-		mWorkSheet.Cells(i, 15).Value =  mWorkSheet.Cells(i, 28).Value
-		vTempPER = mWorkSheet.Cells(i, 28).Value
-		 df.iloc[10][4]
-		 # PER = 주가 / 주당순이익(EPS)
-		vTempEPS = df.iloc[9][10] 	                   # 2019.12 ~ 2020.09 EPS
+		mWorkSheet.Cells(i, 15).Value =  df.iloc[10][4]
+		if mWorkSheet.Cells(i, 15).Value == 65535 :
+			#PER 어닝 이 없는 경우 직접 PER을 구한다.
+			vTempEPS = df.iloc[9][6] + df.iloc[9][7] + df.iloc[9][8] + df.iloc[9][9]  #최근 4분기 EPS 합계
+			print("vTempEPS = " + vTempEPS)
+			vTempPER = float(str(mWorkSheet.Cells(i, 10).Value) / vTempEPS)
+            # PER = 주가 / 주당순이익(EPS)
+			mWorkSheet.Cells(i, 15).Value = vTempPER
+			print("estimated PER : " + str(vTempPER))
+
+		vTempEPS = df.iloc[9][9]   #  최근 마지막 실적 2020.09 EPS
 		vTempEPS = vTempEPS*4
-		mWorkSheet.Cells(i, 16).Value = float(str(mWorkSheet.Cells(i, 10).Value)) / vTempEPS  # 주가 / 주당 순이익
+		vTempPER = float(mWorkSheet.Cells(i, 10).Value / float(vTempEPS))
+		mWorkSheet.Cells(i, 16).Value = vTempPER  # 최근 분기 대비 PER
+		print("estimated quater PER : " + str(vTempPER))
 
 		mWorkSheet.Cells(i, 17).Value = df.iloc[12][4] # PBR
+		if mWorkSheet.Cells(i, 17).Value == 65535 :
+			# PBR 어닝이 없을 경우 직전 4분기 평균을 사용한다.
+			vTempPBR = df.iloc[12][6] + df.iloc[12][7] + df.iloc[12][8] + df.iloc[12][9]  #최근 4분기 PBR 합계
+			vTempPBR = float(vTempPBR/float(4))
+			mWorkSheet.Cells(i, 17).Value = vTempPBR
+			print("estimated PBR : " + str(vTempPBR))
 
 		mWorkSheet.Cells(i, 18).Value = df.iloc[5][4] # ROE
+		if mWorkSheet.Cells(i, 18).Value == 65535 :
+			# ROE 어닝이 없을 경우 직전 4분기 평균을 사용한다.
+			vTempROE = df.iloc[5][6] + df.iloc[5][7] + df.iloc[5][8] + df.iloc[5][9]  #최근 4분기 PBR 합계
+			vTempROE = float(vTempROE/float(4))
+			mWorkSheet.Cells(i, 17).Value = vTempROE
+			print("estimated ROE : " + str(vTempROE))
 
 		mWorkSheet.Cells(i, 61).Value = "=AK" + str(i) + "/Y" + str(i)   #영업이익률(2017.12)
 		mWorkSheet.Cells(i, 62).Value = "=AL" + str(i) + "/Z" + str(i)   #영업이익률(2018.12)
@@ -271,7 +290,7 @@ def get_company_list() :
 		df = pd.DataFrame(table_df)
 		mWorkSheet.Cells(i, 14).Value = df.iloc[4][1] #외국인비율(%)
 
-		mWorkSheet.Cells(i, 19).Value = "=AB" +str(i) + "/AA" + str(i)    # 2020 / 2019 매출증가 (YoY)
+		mWorkSheet.Cells(i, 19).Value = "=AB" +str(i) + "/AA" + str(i)  # 2020 / 2019 매출증가 (YoY)
 		mWorkSheet.Cells(i, 20).Value = "=AI" +str(i) + "/AE" + str(i)  # 전년동분기대비 매출증가 (QoQ)
 		mWorkSheet.Cells(i, 21).Value = "=AN" +str(i) + "/AM" + str(i)  # 2020 / 2019 영업이익증가  (YoY)
 		mWorkSheet.Cells(i, 22).Value = "=AU" +str(i) + "/AQ" + str(i)  # 전년동분기대비 영업이익 증가  (QoQ)
@@ -288,18 +307,18 @@ mWorkSheet = mWorkBook.Worksheets('RawData')
 mWorkSheet.Select()
 
 #set_title_list()
-#get_company_list()
+get_company_list()
 #def run_each_company_data(company_code) :
 
 #test code start
-url = 'https://finance.naver.com/item/main.nhn?code=081000'
-table_df_list = pd.read_html(url, encoding='euc-kr')
-table_df = table_df_list[3]  # 리스트 중에서 원하는 데이터프레임 한개를 가져온다
+#url = 'https://finance.naver.com/item/main.nhn?code=021040'
+#table_df_list = pd.read_html(url, encoding='euc-kr')
+#table_df = table_df_list[3]  # 리스트 중에서 원하는 데이터프레임 한개를 가져온다
 #table_df.columns = table_df.columns.droplevel(2)
-print('table_df_list[3]')
-df = pd.DataFrame(table_df)
-df.fillna(0)
-print(table_df)
+#print('table_df_list[3]')
+#df = pd.DataFrame(table_df)
+#df.fillna(0)
+#print(table_df)
 #print(df.iloc[0, 4] == 'nan')
 #print(df.iloc[0, 4] == np.nan)
 #test code end
