@@ -321,7 +321,7 @@ def get_company_list_value() :
 	print("Laster Row : " + str(lastRow) + " colum num : " + str(lastCol))
 	#mWorkSheet.Range("C2:C" + str(lastRow)).Select()  # 기업코드
 
-	for i in range (1368, 2269) : #lastRow) :
+	for i in range (2,  lastRow) :
 		url = 'https://finance.naver.com/item/sise.nhn?code=' + str(mWorkSheet.Cells(i,3).Value)
 		print('기업명 = ' + str(mWorkSheet.Cells(i,4).Value))
 		table_df_list = pd.read_html(url, encoding='euc-kr')    # 한글이 깨짐. utf-8도 깨짐. 그래서 'euc-kr'로 설정함
@@ -460,7 +460,7 @@ def get_company_list_value() :
 		else :
 			mWorkSheet.Cells(i, 60).Value = df.iloc[2][10] # 2020.12 (E)
 
-		if pd.isna(df.iloc[10,4]) :
+		if pd.isna(df.iloc[10,4]) or (str(df.iloc[10,4]) == str('-')) :
 			#PER 어닝 이 없는 경우 직접 PER을 구한다.
 			vTempTotalEPS = 0
 			vTmpQtrCnt = 0
@@ -493,7 +493,7 @@ def get_company_list_value() :
 		else :
 			mWorkSheet.Cells(i, 15).Value =  df.iloc[10][4]
 
-		if pd.isna(df.iloc[9,9]) :
+		if pd.isna(df.iloc[9,9]) or (str(df.iloc[9,9]) == str('-')) :
 			vTempPER = 0
 		else :
 			vTempEPS = int(df.iloc[9][9])   #  최근 마지막 실적 2020.09 EPS
@@ -505,7 +505,7 @@ def get_company_list_value() :
 		mWorkSheet.Cells(i, 16).Value = vTempPER  # 최근 분기 대비 PER
 		print("estimated quarter PER : " + str(vTempPER))
 
-		if pd.isna(df.iloc[12,4]) :
+		if pd.isna(df.iloc[12,4])  or (str(df.iloc[12,4]) == str('-')) :
 			# PBR 어닝이 없을 경우 직전 4분기 평균을 사용한다.
 			vTmpQtrCnt = 0
 			vTempPBR = 0
