@@ -152,12 +152,30 @@ def get_company_list_full() :
 		mWorkSheet.Cells(i, 25).Value = df.iloc[0][1] # 2017.12 (Y)
 		mWorkSheet.Cells(i, 26).Value = df.iloc[0][2] # 2018.12 (Y)
 		mWorkSheet.Cells(i, 27).Value = df.iloc[0][3] # 2019.12 (Y)
-		mWorkSheet.Cells(i, 28).Value = df.iloc[0][4] # 2020.12 (E) (Y)
-		if mWorkSheet.Cells(i, 28).Value == 65535 :
-			#어닝이 없을 경우 NaN값이 65535로 입력됨
+		if pd.isna(df.iloc[0,4]) :
 			#어닝이 없을 경우 최근 4분기를 더한다. 
-			vTmp = df.iloc[0][6] +  df.iloc[0][7] + df.iloc[0][8] + df.iloc[0][9]
-			mWorkSheet.Cells(i, 28).Value = vTmp
+			vSumRevenue = 0
+			if pd.isna(df.iloc[0,6]) or (str(df.iloc[0,6]) == str('-')) :
+				vSumRevenue += 0
+			else : 
+				vSumRevenue += float(df.iloc[0][6])
+			if pd.isna(df.iloc[0,7]) or (str(df.iloc[0,7]) == str('-')) :
+				vSumRevenue += 0
+			else : 
+				vSumRevenue += float(df.iloc[0][7])
+			if pd.isna(df.iloc[0,8]) or (str(df.iloc[0,8]) == str('-')) :
+				vSumRevenue += 0
+			else :
+				vSumRevenue += float(df.iloc[0][8])
+			if pd.isna(df.iloc[0,9]) or (str(df.iloc[0,9]) == str('-')) :
+				vSumRevenue += 0
+			else :
+				vSumRevenue = float(df.iloc[0][9])
+			mWorkSheet.Cells(i, 28).Value = vSumRevenue
+		else :
+			mWorkSheet.Cells(i, 28).Value = df.iloc[0][4] # 2020.12 (E) (Y)
+		print("매출액 : " + str(mWorkSheet.Cells(i, 28).Value))
+
 
 		#to be filled 2020.03 data
 		#mWorkSheet.Cells(i, 30).Value = df.iloc[0][5] # 2019.06
@@ -166,10 +184,11 @@ def get_company_list_full() :
 		mWorkSheet.Cells(i, 33).Value = df.iloc[0][7] # 2020.03
 		mWorkSheet.Cells(i, 34).Value = df.iloc[0][8] # 2020.06
 		mWorkSheet.Cells(i, 35).Value = df.iloc[0][9] # 2020.09
-		mWorkSheet.Cells(i, 36).Value = df.iloc[0][10] # 2020.12 (E)
-		if mWorkSheet.Cells(i, 36).Value == 65535 :
+		if pd.isna(df.iloc[0,10]) :
 			# 어닝이 없을 경우 이전 2019년 4분기를 사용한다. 
 			mWorkSheet.Cells(i, 36).Value = df.iloc[0][6] # 2019.12
+		else :
+			mWorkSheet.Cells(i, 36).Value = df.iloc[0][10] # 2020.12 (E)
 
 		#영업이익
 		mWorkSheet.Cells(i, 37).Value = df.iloc[1][1] # 2017.12 (Y)
@@ -302,7 +321,7 @@ def get_company_list_value() :
 	print("Laster Row : " + str(lastRow) + " colum num : " + str(lastCol))
 	#mWorkSheet.Range("C2:C" + str(lastRow)).Select()  # 기업코드
 
-	for i in range (28, 50) : #lastRow) :
+	for i in range (1368, 2269) : #lastRow) :
 		url = 'https://finance.naver.com/item/sise.nhn?code=' + str(mWorkSheet.Cells(i,3).Value)
 		print('기업명 = ' + str(mWorkSheet.Cells(i,4).Value))
 		table_df_list = pd.read_html(url, encoding='euc-kr')    # 한글이 깨짐. utf-8도 깨짐. 그래서 'euc-kr'로 설정함
@@ -315,7 +334,7 @@ def get_company_list_value() :
 		#print(df.shape) #get row, column count
 
 		url = 'https://finance.naver.com/item/main.nhn?code=' + str(mWorkSheet.Cells(i,3).Value)
-		#print('url = ' + str(url))
+
 		table_df_list = pd.read_html(url, encoding='euc-kr')
 		table_df = table_df_list[5] #주요 재무제표
 		df = pd.DataFrame(table_df)
@@ -327,118 +346,154 @@ def get_company_list_value() :
 		#table_df.columns = table_df.columns.droplevel(2)
 		df = pd.DataFrame(table_df)
 		df.fillna(0)
+		#df.columns = ['table', '2017.12', '2018.12', '2019.12', '2020.12(E)', '2019.3Q', '2019.4Q', '2020.1Q', '2020.2Q', '2020.3Q', '2020.4Q']
+		#df[['2017.12', '2018.12', '2019.12', '2020.12(E)', '2019.3Q', '2019.4Q', '2020.1Q', '2020.2Q', '2020.3Q']] \
+		# = df[['2017.12', '2018.12', '2019.12', '2020.12(E)', '2019.3Q', '2019.4Q', '2020.1Q', '2020.2Q', '2020.3Q']].astype(int)
 
 		#매출액
-		mWorkSheet.Cells(i, 28).Value = df.iloc[0][4] # 2020.12 (E) (Y)
-		if mWorkSheet.Cells(i, 28).Value == 65535 :
-			#어닝이 없을 경우 NaN값이 65535로 입력됨
+		if pd.isna(df.iloc[0,4]) :
 			#어닝이 없을 경우 최근 4분기를 더한다. 
 			vSumRevenue = 0
-			vTmpRevenue = df.iloc[0][6]
-			if vTmpRevenue != 65535 :
-				vSumRevenue += vTmpRevenue
-			vTmpRevenue = df.iloc[0][7]
-			if vTmpRevenue != 65535 :
-				vSumRevenue += vTmpRevenue
-			vTmpRevenue = df.iloc[0][8]
-			if vTmpRevenue != 65535 :
-				vSumRevenue += vTmpRevenue
-			vTmpRevenue = df.iloc[0][9]
-			if vTmpRevenue != 65535 :
-				vSumRevenue += vTmpRevenue
+			if pd.isna(df.iloc[0,6]) or (str(df.iloc[0,6]) == str('-')) :
+				vSumRevenue += 0
+			else : 
+				vSumRevenue += float(df.iloc[0][6])
+			if pd.isna(df.iloc[0,7]) or (str(df.iloc[0,7]) == str('-')) :
+				vSumRevenue += 0
+			else : 
+				vSumRevenue += float(df.iloc[0][7])
+			if pd.isna(df.iloc[0,8]) or (str(df.iloc[0,8]) == str('-')) :
+				vSumRevenue += 0
+			else :
+				vSumRevenue += float(df.iloc[0][8])
+			if pd.isna(df.iloc[0,9]) or (str(df.iloc[0,9]) == str('-')) :
+				vSumRevenue += 0
+			else :
+				vSumRevenue = float(df.iloc[0][9])
 			mWorkSheet.Cells(i, 28).Value = vSumRevenue
+		else :
+			mWorkSheet.Cells(i, 28).Value = df.iloc[0][4] # 2020.12 (E) (Y)
 		print("매출액 : " + str(mWorkSheet.Cells(i, 28).Value))
 
-		mWorkSheet.Cells(i, 35).Value = df.iloc[0][9] # 2020.09
-		if mWorkSheet.Cells(i, 35).Value == 65535 :
+		if pd.isna(df.iloc[0,9]) :
 			mWorkSheet.Cells(i, 35).Value = 0
+		else :
+			mWorkSheet.Cells(i, 35).Value = df.iloc[0][9] # 2020.09
 
-		mWorkSheet.Cells(i, 36).Value = df.iloc[0][10] # 2020.12 (E)
-		if mWorkSheet.Cells(i, 36).Value == 65535 :
+		if pd.isna(df.iloc[0,10]) or (str(df.iloc[0,10]) == str('-')) :
 			# 어닝이 없을 경우 이전 2019년 4분기를 사용한다.
-			vTmpRevenue = df.iloc[0][6]
-			if vTmpRevenue != 65535 :
+			if pd.isna(df.iloc[0,6]) or (str(df.iloc[0,6]) == str('-')) :
 				mWorkSheet.Cells(i, 36).Value = 0
 			else :
 				mWorkSheet.Cells(i, 36).Value = int(df.iloc[0][6]) # 2019.12
+		else :
+			mWorkSheet.Cells(i, 36).Value = df.iloc[0][10] # 2020.12 (E)
 
 		#영업이익
-		mWorkSheet.Cells(i, 47).Value = df.iloc[1][9] # 2020.09
-		if mWorkSheet.Cells(i, 47).Value == 65535 :
-			mWorkSheet.Cells(i, 47).Value = 0
-		
-		mWorkSheet.Cells(i, 40).Value = df.iloc[1][4] # 2020.12 (E) (Y)
-		if mWorkSheet.Cells(i, 40).Value == 65535 :
+		if pd.isna(df.iloc[1,4]) :
 			#어닝이 없을 경우 최근 4분기를 더한다. 
-			vTmpProfit = 0
-			vTmpProfit = mWorkSheet.Cells(i, 44).Value + mWorkSheet.Cells(i, 45).Value + mWorkSheet.Cells(i, 46).Value + mWorkSheet.Cells(i, 47).Value
-			mWorkSheet.Cells(i, 40).Value = vTmpProfit
+			vSumProfit = 0
+			if pd.isna(df.iloc[1,6]) or (str(df.iloc[1,6]) == str('-')) :
+				vSumProfit += 0
+			else :
+				vSumProfit += float(df.iloc[1][6])
+			if pd.isna(df.iloc[1,7]) or (str(df.iloc[1,7]) == str('-')) :
+				vSumProfit += 0
+			else :
+				vSumProfit += float(df.iloc[1][7])
+			if pd.isna(df.iloc[1,8]) or (str(df.iloc[1,8]) == str('-')) :
+				vSumProfit += 0
+			else :
+				vSumProfit += float(df.iloc[1][8])
+			if pd.isna(df.iloc[1,9]) or (str(df.iloc[1,9]) == str('-')) :
+				vSumProfit += 0
+			else :
+				vSumProfit = float(df.iloc[1][9])
+			mWorkSheet.Cells(i, 40).Value = vSumProfit
+		else :
+			mWorkSheet.Cells(i, 40).Value = df.iloc[1][4] # 2020.12 (E) (Y)
 
-		mWorkSheet.Cells(i, 48).Value = df.iloc[1][10] # 2020.12
-		if mWorkSheet.Cells(i, 48).Value == 65535 :
+		if pd.isna(df.iloc[1,9]) :
+			mWorkSheet.Cells(i, 47).Value = 0
+		else :
+			mWorkSheet.Cells(i, 47).Value = df.iloc[1][9] # 2020.09
+
+
+		if pd.isna(df.iloc[1,10]) :
 			# 어닝이 없을 경우 이전 2019년 4분기를 사용한다. 
 			mWorkSheet.Cells(i, 48).Value =  mWorkSheet.Cells(i, 44).Value
+		else :
+			mWorkSheet.Cells(i, 48).Value = df.iloc[1][10] # 2020.12
 
 		#당기순이익
-		mWorkSheet.Cells(i, 59).Value = df.iloc[2][9] # 2020.09
-		if mWorkSheet.Cells(i, 59).Value == 65535 :
+		if pd.isna(df.iloc[2,9]) :
 			mWorkSheet.Cells(i, 59).Value = 0
+		else :
+			mWorkSheet.Cells(i, 59).Value = df.iloc[2][9] # 2020.09
 
-		mWorkSheet.Cells(i, 52).Value = df.iloc[2][4] # 2020.12 (E) (Y)
-		if mWorkSheet.Cells(i, 52).Value == 65535 :
+		if pd.isna(df.iloc[2,4]) :
 			#어닝이 없을 경우 최근 4분기를 더한다. 
-			vTmpEarning = 0
-			vTmpEarning = mWorkSheet.Cells(i, 56).Value + mWorkSheet.Cells(i, 57).Value + mWorkSheet.Cells(i, 58).Value + mWorkSheet.Cells(i, 59).Value
-			mWorkSheet.Cells(i, 52).Value = vTmpEarning
+			vSumEarning = 0
+			if pd.isna(df.iloc[2,6]) or (str(df.iloc[2,6]) == str('-')) :
+				vSumEarning += 0
+			else : 
+				vSumEarning += float(df.iloc[2][6])
+			if pd.isna(df.iloc[2,7]) or (str(df.iloc[2,7]) == str('-')) :
+				vSumEarning += 0
+			else : 
+				vSumEarning += float(df.iloc[2][7])
+			if pd.isna(df.iloc[2,8]) or (str(df.iloc[2,8]) == str('-')) :
+				vSumEarning += 0
+			else :
+				vSumEarning += float(df.iloc[2][8])
+			if pd.isna(df.iloc[2,9]) or (str(df.iloc[2,9]) == str('-')) :
+				vSumEarning += 0
+			else :
+				vSumEarning = float(df.iloc[2][9])
+			mWorkSheet.Cells(i, 52).Value = vSumEarning
+		else :
+			mWorkSheet.Cells(i, 52).Value = df.iloc[2][4] # 2020.12 (E) (Y)
 
-		mWorkSheet.Cells(i, 60).Value = df.iloc[2][10] # 2020.12 (E)
-		if mWorkSheet.Cells(i, 60).Value == 65535 :
+		if pd.isna(df.iloc[2,10]) :
 			# 어닝이 없을 경우 이전 2019년 4분기를 사용한다. 
 			mWorkSheet.Cells(i, 60).Value = mWorkSheet.Cells(i, 56).Value
+		else :
+			mWorkSheet.Cells(i, 60).Value = df.iloc[2][10] # 2020.12 (E)
 
-		mWorkSheet.Cells(i, 15).Value =  df.iloc[10][4]
-		if mWorkSheet.Cells(i, 15).Value == 65535 :
+		if pd.isna(df.iloc[10,4]) :
 			#PER 어닝 이 없는 경우 직접 PER을 구한다.
 			vTempTotalEPS = 0
 			vTmpQtrCnt = 0
-			vTempQtrEPS = 0
-			if pd.isna(df.iloc[9,6]) :
-				vTempTotalEPS += 0
-				print("vTempTotalEPS 1 = " + str(vTempTotalEPS))
-			else :
-				vTmpQtrCnt += 1
-				print("vTempTotalEPS 1 = " + str(vTempTotalEPS))
-				vTempTotalEPS += int(df.iloc[9][6])
-				vTempQtrEPS = df.iloc[9][6]
-			if vTempQtrEPS == 65535 :
+			if pd.isna(df.iloc[9,6]) or (str(df.iloc[9,6]) == str('-')) :
 				vTempTotalEPS += 0
 			else :
 				vTmpQtrCnt += 1
-				vTempTotalEPS += int(df.iloc[9][7])
-				print("vTempTotalEPS 2 = " + str(vTempTotalEPS))
-			vTempQtrEPS = df.iloc[9][8]
-			if vTempQtrEPS == 65535 :
+				vTempTotalEPS += float(df.iloc[9][6])
+			if pd.isna(df.iloc[9,7]) or (str(df.iloc[9,7]) == str('-')) :
 				vTempTotalEPS += 0
 			else :
 				vTmpQtrCnt += 1
-				vTempTotalEPS += int(df.iloc[9][8])
-				print("vTempTotalEPS 3 = " + str(vTempTotalEPS))
-			vTempQtrEPS = df.iloc[9][9]
-			if vTempQtrEPS == 65535 :
+				vTempTotalEPS += float(df.iloc[9][7])
+			if pd.isna(df.iloc[9,8]) or (str(df.iloc[9,8]) == str('-')) :
 				vTempTotalEPS += 0
 			else :
 				vTmpQtrCnt += 1
-				vTempTotalEPS += int(df.iloc[9][9])
-				print("vTempTotalEPS 4 = " + str(vTempTotalEPS))
+				vTempTotalEPS += float(df.iloc[9][8])
+			if pd.isna(df.iloc[9,9]) or (str(df.iloc[9,9]) == str('-')) :
+				vTempTotalEPS += 0
+			else :
+				vTmpQtrCnt += 1
+				vTempTotalEPS += float(df.iloc[9][9])
 			print("vTempTotalEPS = " + str(vTempTotalEPS))
 			if vTempTotalEPS != 0 :
 				vTempTotalEPS = float(mWorkSheet.Cells(i, 10).Value / float(vTempTotalEPS))
             	# PER = 주가 / 주당순이익(EPS)
 			mWorkSheet.Cells(i, 15).Value = vTempTotalEPS
 			print("estimated EPS : " + str(vTempTotalEPS))
+		else :
+			mWorkSheet.Cells(i, 15).Value =  df.iloc[10][4]
 
-		mWorkSheet.Cells(i, 16).Value =  df.iloc[9][9]
-		if mWorkSheet.Cells(i, 16).Value == 65535 :
+		if pd.isna(df.iloc[9,9]) :
 			vTempPER = 0
 		else :
 			vTempEPS = int(df.iloc[9][9])   #  최근 마지막 실적 2020.09 EPS
@@ -450,68 +505,69 @@ def get_company_list_value() :
 		mWorkSheet.Cells(i, 16).Value = vTempPER  # 최근 분기 대비 PER
 		print("estimated quarter PER : " + str(vTempPER))
 
-		mWorkSheet.Cells(i, 17).Value = df.iloc[12][4] # PBR
-		if mWorkSheet.Cells(i, 17).Value == 65535 :
+		if pd.isna(df.iloc[12,4]) :
 			# PBR 어닝이 없을 경우 직전 4분기 평균을 사용한다.
 			vTmpQtrCnt = 0
 			vTempPBR = 0
-			if str(df.iloc[12][6] == 'nan') :
+			if pd.isna(df.iloc[12,6]) or (str(df.iloc[12,6]) == str('-')) :
 				vTempPBR += 0
 			else :
 				vTmpQtrCnt += 1
-				vTempPBR += df.iloc[12][6]
-			if str(df.iloc[12][7] == 'nan') :
+				vTempPBR += float(df.iloc[12][6])
+			if pd.isna(df.iloc[12,7]) or (str(df.iloc[12,7]) == str('-')) :
 				vTempPBR += 0
 			else :
 				vTmpQtrCnt += 1
-				vTempPBR += df.iloc[12][7]
-			if str(df.iloc[12][8] == 'nan') :
+				vTempPBR += float(df.iloc[12][7])
+			if pd.isna(df.iloc[12,8]) or (str(df.iloc[12,8]) == str('-')) :
 				vTempPBR += 0
 			else :
 				vTmpQtrCnt += 1
-				vTempPBR += df.iloc[12][8]
-			if str(df.iloc[12][9] == 'nan') :
+				vTempPBR += float(df.iloc[12][8])
+			if pd.isna(df.iloc[12,9]) or (str(df.iloc[12,9]) == str('-')) :
 				vTempPBR += 0
 			else :
 				vTmpQtrCnt += 1
-				vTempPBR += df.iloc[12][9]
+				vTempPBR += float(df.iloc[12][9])
 			print("estimated vTempPBR : " + str(vTempPBR))
 			if vTmpQtrCnt != 0 :
 				vTempPBR = float(vTempPBR/float(vTmpQtrCnt))
 			mWorkSheet.Cells(i, 17).Value = vTempPBR
-			print("estimated PBR : " + str(vTempPBR))
+		else :
+			mWorkSheet.Cells(i, 17).Value = df.iloc[12][4] # PBR
+		print("estimated PBR : " + str(mWorkSheet.Cells(i, 17).Value))
 
-
-		mWorkSheet.Cells(i, 18).Value = df.iloc[5][4] # ROE
-		if mWorkSheet.Cells(i, 18).Value == 65535 :
+		if pd.isna(df.iloc[5,4]) :
 			# ROE 어닝이 없을 경우 직전 4분기 평균을 사용한다.
 			vTmpQtrCnt = 0
 			vTempROE = 0
-			if str(df.iloc[5][6] == 'nan') :
+			if pd.isna(df.iloc[5,6]) or (str(df.iloc[5,6]) == str('-')) :
 				vTempROE += 0
 			else :
 				vTmpQtrCnt += 1
-				vTempROE += df.iloc[5][6]
-			if str(df.iloc[5][7] == 'nan') :
+				vTempROE += float(df.iloc[5][6])
+			if pd.isna(df.iloc[5,7]) or (str(df.iloc[5,7]) == str('-')) :
 				vTempROE += 0
 			else :
 				vTmpQtrCnt += 1
-				vTempROE += df.iloc[5][7]
-			if str(df.iloc[5][8] == 'nan') :
+				vTempROE += float(df.iloc[5][7])
+			if pd.isna(df.iloc[5,8]) or (str(df.iloc[5,8]) == str('-')) :
 				vTempROE += 0
 			else :
 				vTmpQtrCnt += 1
-				vTempROE += df.iloc[5][8]
-			if str(df.iloc[5][9] == 'nan') :
+				vTempROE += float(df.iloc[5][8])
+			if pd.isna(df.iloc[5,9]) or (str(df.iloc[5,8]) == str('-')) :
 				vTempROE += 0
 			else :
 				vTmpQtrCnt += 1
-				vTempROE += df.iloc[5][9]
+				vTempROE += float(df.iloc[5][9])
 			print("estimated vTempROE : " + str(vTempROE))
 			if vTmpQtrCnt != 0 :
 				vTempROE = float(vTempROE/float(vTmpQtrCnt))
-			mWorkSheet.Cells(i, 17).Value = vTempROE
-			print("estimated ROE : " + str(vTempROE))
+			mWorkSheet.Cells(i, 18).Value = vTempROE
+		else :
+			mWorkSheet.Cells(i, 18).Value = df.iloc[5][4] # ROE
+			print("estimated ROE : " + str(mWorkSheet.Cells(i, 18).Value))
 
 		table_df = table_df_list[4]
 		df = pd.DataFrame(table_df)
