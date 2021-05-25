@@ -41,11 +41,14 @@ def print_disclosure(disclosure) :
 	month = published.month
 	day = published.day
 	hour = published.hour + 9
+        if hour > 24 :
+            day = day +1
+            hour = hour -24
 	minute = published.minute
 	date_info = f'{year}년 {month}월 {day}일 {hour}시 {minute}분'
 	title = disclosure['title']
 	message = f'{title}\n{link}\n{date_info}'
 
-	if '공급계약체결' or '무상증자결정' or '공개매수신고서' or '소송등의제기ㆍ신청(경영권분쟁소송)' in title:  #'유무상증자' 는 제외해야 함.
+	if ('공급계약체결' or '무상증자결정' or '공개매수신고서' or '소송등의제기ㆍ신청(경영권분쟁소송)') in title:  #'유무상증자' 는 제외해야 함.
 		bot.send_message(chat_id=CHAT_ID, text=message)
 		#print(company, title, date_info)
