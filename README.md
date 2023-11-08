@@ -1,4 +1,4 @@
-# Python crawling naver stcok 
+# Python crawling naver stock 
 
 ###install plugin BeautifulSoup, Numpy array, 
 pip3 install bs4 
